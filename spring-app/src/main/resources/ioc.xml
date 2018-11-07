@@ -7,6 +7,9 @@
 
 	<bean id="customerDao" class="com.cobostack.spring.ioc.dao.CustomerDaoImpl"/>
 
-	<bean id="customerService" class="com.cobostack.spring.ioc.service.CustomerServiceImpl"/>
+	<bean id="customerService" class="com.cobostack.spring.ioc.service.CustomerServiceImpl">
+		<!-- setter 注入 -->
+		<property name="customerDao" ref="customerDao"/>
+	</bean>
 
 </beans>

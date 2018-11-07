@@ -1,7 +1,6 @@
 package com.cobostack.spring.ioc.service;
 
 import com.cobostack.spring.ioc.dao.CustomerDao;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Xu_Ming
@@ -10,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class CustomerServiceImpl implements CustomerService {
 
-	@Autowired
 	private CustomerDao customerDao;
 
 	@Override
 	public void save() {
 		customerDao.save();
+	}
+
+	public void setCustomerDao(CustomerDao customerDao) {
+		this.customerDao = customerDao;
 	}
 }
