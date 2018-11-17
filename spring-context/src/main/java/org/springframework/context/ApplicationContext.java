@@ -49,6 +49,14 @@ import org.springframework.lang.Nullable;
  * {@link ApplicationContextAware} beans as well as {@link ResourceLoaderAware},
  * {@link ApplicationEventPublisherAware} and {@link MessageSourceAware} beans.
  *
+ * <ol>
+ *    ApplicationContext 是 Spring 提供的一个高级的 IOC 容器， 它除了能够提供 IOC 容器的基本功
+ * 能外， 还为用户提供了以下的附加服务。
+ * <li> 支持信息源， 可以实现国际化。 （实现 MessageSource 接口）
+ * <li> 访问资源。 (实现 ResourcePatternResolver 接口）
+ * <li> 支持应用事件。 (实现 ApplicationEventPublisher 接口)
+ * </ol>
+ *
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @see ConfigurableApplicationContext

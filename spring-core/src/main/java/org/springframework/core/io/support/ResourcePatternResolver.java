@@ -44,6 +44,8 @@ import org.springframework.core.io.ResourceLoader;
  * expected to be a path without placeholders in this case (e.g. "/beans.xml");
  * JAR files or classes directories can contain multiple files of the same name.
  *
+ * <p> 该资源模式解析器, 支持模式匹配, 支持同时载入多个资源.
+ *
  * @author Juergen Hoeller
  * @since 1.0.2
  * @see org.springframework.core.io.Resource
@@ -58,6 +60,9 @@ public interface ResourcePatternResolver extends ResourceLoader {
 	 * This differs from ResourceLoader's classpath URL prefix in that it
 	 * retrieves all matching resources for a given name (e.g. "/beans.xml"),
 	 * for example in the root of all deployed JAR files.
+	 *
+	 * <p> 它会检索给定名称的所有匹配资源 (例如 "/beans.xml"), 会在根目录中所有已部署的JAR文件中查找.
+	 *
 	 * @see org.springframework.core.io.ResourceLoader#CLASSPATH_URL_PREFIX
 	 */
 	String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
@@ -67,6 +72,9 @@ public interface ResourcePatternResolver extends ResourceLoader {
 	 * <p>Overlapping resource entries that point to the same physical
 	 * resource should be avoided, as far as possible. The result should
 	 * have set semantics.
+	 *
+	 * <p> 基于模式获取多个资源.
+	 *
 	 * @param locationPattern the location pattern to resolve
 	 * @return the corresponding Resource objects
 	 * @throws IOException in case of I/O errors

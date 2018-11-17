@@ -445,11 +445,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * <p><b>Do not call this when needing to resolve a location pattern.</b>
 	 * Call the context's {@code getResources} method instead, which
 	 * will delegate to the ResourcePatternResolver.
+	 *
+	 * <p> 获取一个 Spring Source 的加载器用于读入 Spring Bean 定义资源文件
+	 *
 	 * @return the ResourcePatternResolver for this context
 	 * @see #getResources
 	 * @see org.springframework.core.io.support.PathMatchingResourcePatternResolver
 	 */
 	protected ResourcePatternResolver getResourcePatternResolver() {
+		// AbstractApplicationContext 实际上也是一个资源加载器, 因为继承自 DefaultResourceLoader
+		// Spring 资源加载器: ResourceLoader#getResource(String location) 用于载入资源
+		// PathMatchingResourcePatternResolver#getResources(java.lang.String) 支持模式载入多个资源
 		return new PathMatchingResourcePatternResolver(this);
 	}
 
@@ -510,13 +516,20 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return this.applicationListeners;
 	}
 
+	/**
+	 * SpringIOC 容器对 Bean 定义资源的载入是从 refresh()函数开始的, refresh()是一个模板方法, refresh()方法的作用是:
+	 * 在创建 IOC 容器前, 如果已经有容器存在, 则需要把已有的容器销毁和关闭, 以保证在 refresh 之后使用的是新建立起来的
+	 * IOC 容器. refresh 的作用类似于对 IOC 容器的重启, 在新建立好的容器中对容器进行初始化, 对 Bean 定义资源进行载入.
+	 */
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
+			// 调用容器准备刷新的方法, 获取容器的启动时间, 同时给容器设置激活标记
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			// 获得一个新的 BeanFactory(已存在会被销毁重建), 调用子类的 refreshBeanFactory()
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
@@ -616,11 +629,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	/**
 	 * Tell the subclass to refresh the internal bean factory.
+	 *
+	 * <p> 获得 一个新的 BeanFactory
+	 *
 	 * @return the fresh BeanFactory instance
 	 * @see #refreshBeanFactory()
 	 * @see #getBeanFactory()
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+		// 调用子类的 refreshBeanFactory() 方法
 		refreshBeanFactory();
 		return getBeanFactory();
 	}
@@ -1350,6 +1367,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * <p>A subclass will either create a new bean factory and hold a reference to it,
 	 * or return a single BeanFactory instance that it holds. In the latter case, it will
 	 * usually throw an IllegalStateException if refreshing the context more than once.
+	 *
+	 * <p> 模板方法由子类实现, 来创建不同的 BeanFactory
+	 *
 	 * @throws BeansException if initialization of the bean factory failed
 	 * @throws IllegalStateException if already initialized and multiple refresh
 	 * attempts are not supported

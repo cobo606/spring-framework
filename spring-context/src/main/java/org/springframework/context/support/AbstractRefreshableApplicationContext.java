@@ -122,14 +122,18 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
+		// 已存在 BeanFactory, 先销毁并关闭
 		if (hasBeanFactory()) {
 			destroyBeans();
 			closeBeanFactory();
 		}
 		try {
+			// 创建 IOC容器
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
+			// 对IOC 容器进行定制化, 如设置启动参数, 是否允许循环引用, 开启注解的自动装配等. 用户可重载此方法并设定特定的参数.
 			customizeBeanFactory(beanFactory);
+			// 载入 BeanDefinitions, 抽象方法, 由具体的子类实现.
 			loadBeanDefinitions(beanFactory);
 			synchronized (this.beanFactoryMonitor) {
 				this.beanFactory = beanFactory;

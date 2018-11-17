@@ -94,6 +94,12 @@ import org.springframework.lang.Nullable;
  * <li>a custom destroy-method definition
  * </ol>
  *
+ * <p> BeanFactory 里只对 IOC 容器的基本行为作了定义， 根本不关心你的 Bean 是如何定义怎样加载的。
+ * 正如我们只关心工厂里得到什么的产品对象， 至于工厂是怎么生产这些对象的， 这个基本的接口不关心。
+ * <p> 而要知道工厂是如何产生对象的， 我们需要看具体的 IOC 容器实现， Spring 提供了许多 IOC 容器
+ * 的实现。 比如 XmlBeanFactory， ClasspathXmlApplicationContext 等。 其中 XmlBeanFactory 就
+ * 是针对最基本的 IOC 容器的实现， 这个 IOC 容器可以读取 XML 文件定义的 BeanDefinition 中对 bean 的描述）
+ *
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @author Chris Beams
@@ -120,6 +126,9 @@ public interface BeanFactory {
 	 * beans <i>created</i> by the FactoryBean. For example, if the bean named
 	 * {@code myJndiObject} is a FactoryBean, getting {@code &myJndiObject}
 	 * will return the factory, not the instance returned by the factory.
+	 *
+	 * <p> 例如, 如果名为 myJndiObject 的bean是FactoryBean, 则获取 &myJndiObject将返回工厂, 而不是工厂返回的实例.
+	 * 也就是说: 想要获得 FactoryBean 本身, 那么在 getBean 的时候传递的 &name
 	 */
 	String FACTORY_BEAN_PREFIX = "&";
 
@@ -131,6 +140,9 @@ public interface BeanFactory {
 	 * returned objects in the case of Singleton beans.
 	 * <p>Translates aliases back to the corresponding canonical bean name.
 	 * Will ask the parent factory if the bean cannot be found in this factory instance.
+	 *
+	 * <p> 根据beanName 获取IOC 容器中的实例, 同时支持通过别名获取.
+	 *
 	 * @param name the name of the bean to retrieve
 	 * @return an instance of the bean
 	 * @throws NoSuchBeanDefinitionException if there is no bean definition
@@ -160,6 +172,9 @@ public interface BeanFactory {
 	 * Return an instance, which may be shared or independent, of the specified bean.
 	 * <p>Allows for specifying explicit constructor arguments / factory method arguments,
 	 * overriding the specified default arguments (if any) in the bean definition.
+	 *
+	 * <p> args 是实例初始化传递给构造方法的参数.
+	 *
 	 * @param name the name of the bean to retrieve
 	 * @param args arguments to use when creating a bean instance using explicit arguments
 	 * (only applied when creating a new instance as opposed to retrieving an existing one)
@@ -246,6 +261,9 @@ public interface BeanFactory {
 	 * or abstract, lazy or eager, in scope or not. Therefore, note that a {@code true}
 	 * return value from this method does not necessarily indicate that {@link #getBean}
 	 * will be able to obtain an instance for the same name.
+	 *
+	 * <p> IOC容器中是否包含指定的 bean
+	 *
 	 * @param name the name of the bean to query
 	 * @return whether a bean with the given name is present
 	 */
@@ -260,6 +278,9 @@ public interface BeanFactory {
 	 * check for independent instances.
 	 * <p>Translates aliases back to the corresponding canonical bean name.
 	 * Will ask the parent factory if the bean cannot be found in this factory instance.
+	 *
+	 * <p> 判断指定的 bean 是否是单例的, 如果不存在会抛出异常
+	 *
 	 * @param name the name of the bean to query
 	 * @return whether this bean corresponds to a singleton instance
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name
@@ -327,6 +348,9 @@ public interface BeanFactory {
 	 * as exposed by {@link FactoryBean#getObjectType()}.
 	 * <p>Translates aliases back to the corresponding canonical bean name.
 	 * Will ask the parent factory if the bean cannot be found in this factory instance.
+	 *
+	 * <p> 得到 bean实例的类型
+	 *
 	 * @param name the name of the bean to query
 	 * @return the type of the bean, or {@code null} if not determinable
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name
@@ -344,6 +368,9 @@ public interface BeanFactory {
 	 * and other aliases (if any) will be returned, with the original bean name
 	 * being the first element in the array.
 	 * <p>Will ask the parent factory if the bean cannot be found in this factory instance.
+	 *
+	 * <p> 得到 bean的所有别名, 如果根据别名搜索, 会获得原始的名称
+	 *
 	 * @param name the bean name to check for aliases
 	 * @return the aliases, or an empty array if none
 	 * @see #getBean

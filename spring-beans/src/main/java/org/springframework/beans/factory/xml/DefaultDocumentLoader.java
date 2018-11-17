@@ -64,16 +64,23 @@ public class DefaultDocumentLoader implements DocumentLoader {
 	/**
 	 * Load the {@link Document} at the supplied {@link InputSource} using the standard JAXP-configured
 	 * XML parser.
+	 *
+	 * <p> 使用标准的 JAXP 将载入的 资源文件 转换成 document 对象.
 	 */
 	@Override
 	public Document loadDocument(InputSource inputSource, EntityResolver entityResolver,
 			ErrorHandler errorHandler, int validationMode, boolean namespaceAware) throws Exception {
 
+		// 创建文档构建工厂
 		DocumentBuilderFactory factory = createDocumentBuilderFactory(validationMode, namespaceAware);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Using JAXP provider [" + factory.getClass().getName() + "]");
 		}
+
+		// 创建文档构建器
 		DocumentBuilder builder = createDocumentBuilder(factory, entityResolver, errorHandler);
+
+		// 解析资源文件
 		return builder.parse(inputSource);
 	}
 

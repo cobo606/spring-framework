@@ -62,6 +62,8 @@ import org.springframework.lang.Nullable;
  * that users of this implementation to sanitize patterns in order to prefix
  * them with "/" as it makes sense in the context in which they're used.
  *
+ * <p> ant 模式匹配
+ *
  * @author Alef Arendsen
  * @author Juergen Hoeller
  * @author Rob Harrop

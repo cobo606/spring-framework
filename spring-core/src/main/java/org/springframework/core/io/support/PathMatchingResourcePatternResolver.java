@@ -479,6 +479,9 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * Find all resources that match the given location pattern via the
 	 * Ant-style PathMatcher. Supports resources in jar files and zip files
 	 * and in the file system.
+	 *
+	 * <p> 基于模式匹配获取多个资源, 支持从文件系统, jar, zip 中查找资源.
+	 *
 	 * @param locationPattern the location pattern to match
 	 * @return the result as Resource array
 	 * @throws IOException in case of I/O errors

@@ -126,6 +126,10 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	/**
 	 * Create a new ClassPathXmlApplicationContext with the given parent,
 	 * loading the definitions from the given XML files.
+	 *
+	 * <p> IOC 容器初始化入口, 接受多个XML配置文件, 这个配置文件在根路径下.
+	 * <p> 配置 {@link AbstractRefreshableConfigApplicationContext#configLocations}
+	 *
 	 * @param configLocations array of resource locations
 	 * @param refresh whether to automatically refresh the context,
 	 * loading all bean definitions and creating all singletons.
@@ -138,8 +142,18 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
 
+		// 为容器设置好 Bean 资源加载器
+		// AbstractApplicationContext#AbstractApplicationContext()
+		// AbstractApplicationContext#getResourcePatternResolver()
+		// -> AbstractApplicationContext#resourcePatternResolver
 		super(parent);
+
+		// 设置 Bean 定义资源文件的定位路径
+		// AbstractRefreshableConfigApplicationContext#setConfigLocations(java.lang.String...)
+		// -> AbstractRefreshableConfigApplicationContext.configLocations
 		setConfigLocations(configLocations);
+
+		// 刷新容器, 创建新容器
 		if (refresh) {
 			refresh();
 		}
@@ -181,6 +195,10 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * Create a new ClassPathXmlApplicationContext with the given parent,
 	 * loading the definitions from the given XML files and automatically
 	 * refreshing the context.
+	 *
+	 * <p> IOC 容器初始化入口, 接受多个XML配置文件, 这个配置文件指定的类路径下.
+	 * <p> 配置 {@link ClassPathXmlApplicationContext#configResources}
+	 *
 	 * @param paths array of relative (or absolute) paths within the class path
 	 * @param clazz the class to load resources with (basis for the given paths)
 	 * @param parent the parent context

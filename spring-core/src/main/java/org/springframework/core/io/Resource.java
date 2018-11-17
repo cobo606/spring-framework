@@ -34,19 +34,23 @@ import org.springframework.lang.Nullable;
  * physical form, but a URL or File handle can just be returned for
  * certain resources. The actual behavior is implementation-specific.
  *
+ * <p> Spring为了统一资源的访问, 定义了Resource接口. 为了针对不同的底层资源,
+ * Spring提供了不同资源的实现类来负责不同的资源访问逻辑.
+ *
  * @author Juergen Hoeller
  * @since 28.12.2003
  * @see #getInputStream()
  * @see #getURL()
  * @see #getURI()
  * @see #getFile()
- * @see WritableResource
- * @see ContextResource
- * @see UrlResource
- * @see ClassPathResource
+ * @see WritableResource 可写入的资源文件, 比如系统中的文件. {@link FileSystemResource}, {@link PathResource}
+ * @see ContextResource {@link ServletContextResource} 为访问Web容器上下文中的资源而设计的类，负责以相对于Web应用根目录的路径
+ * 加载资源, 它支持以流和URL的方式访问, 在WAR解包的情况下, 也可以通过File的方式访问, 该类还可以直接从JAR包中访问资源.
+ * @see UrlResource 封装了java.net.URL, 它使用户能够访问任何可以通过URL表示的资源, 如文件系统的资源, HTTP资源, FTP资源等.
+ * @see ClassPathResource 类路径下的资源, 资源以相对于类路径的方式表示.
  * @see FileSystemResource
  * @see PathResource
- * @see ByteArrayResource
+ * @see ByteArrayResource 二进制数组表示的资源, 二进制数组资源可以在内存中通过程序构造.
  * @see InputStreamResource
  */
 public interface Resource extends InputStreamSource {

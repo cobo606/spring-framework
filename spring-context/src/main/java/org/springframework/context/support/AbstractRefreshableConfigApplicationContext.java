@@ -66,6 +66,8 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * <p>If not set, the implementation may use a default as appropriate.
 	 */
 	public void setConfigLocation(String location) {
+		// 处理单个资源文件路径为一个字符串的情况
+		// 如果多个资源文件路径之间用 ",; \t\n" 分隔, 会解析成数组形式. eg. new ClasspathResource("a.xml,b.xml;c.xml")
 		setConfigLocations(StringUtils.tokenizeToStringArray(location, CONFIG_LOCATION_DELIMITERS));
 	}
 
@@ -74,10 +76,12 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * <p>If not set, the implementation may use a default as appropriate.
 	 */
 	public void setConfigLocations(@Nullable String... locations) {
+		// 解析 Bean 定义资源文件的路径， 处理多个资源文件字符串数组. eg. new ClasspathResource(new String[] {"a.xml", "b.xml"})
 		if (locations != null) {
 			Assert.noNullElements(locations, "Config locations must not be null");
 			this.configLocations = new String[locations.length];
 			for (int i = 0; i < locations.length; i++) {
+				// 将字符串解析为路径的方法
 				this.configLocations[i] = resolvePath(locations[i]).trim();
 			}
 		}

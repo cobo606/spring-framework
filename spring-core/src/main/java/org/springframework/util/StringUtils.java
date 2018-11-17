@@ -629,8 +629,11 @@ public abstract class StringUtils {
 	 * inner simple dots.
 	 * <p>The result is convenient for path comparison. For other uses,
 	 * notice that Windows separators ("\") are replaced by simple slashes.
-	 * @param path the original path
-	 * @return the normalized path
+	 *
+	 * <p> 转换路径中带有特殊含义的字符 如(. 当前文件夹, .. 上一层文件夹) 为标准的文件
+	 *
+	 * @param path the original path 系统原始的路径
+	 * @return the normalized path 标准的路径
 	 */
 	public static String cleanPath(String path) {
 		if (!hasLength(path)) {
