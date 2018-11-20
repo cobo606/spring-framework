@@ -314,6 +314,9 @@ public class BeanDefinitionParserDelegate {
 	 * autowire, dependency check settings, init-method, destroy-method and merge settings.
 	 * Support nested 'beans' element use cases by falling back to {@code parentDefaults}
 	 * in case the defaults are not explicitly set locally.
+	 *
+	 * <p> 设置 bean 属性的默认值.
+	 *
 	 * @param defaults the defaults to populate
 	 * @param parentDefaults the parent BeanDefinitionParserDelegate (if any) defaults to fall back to
 	 * @param root the root element of the current bean definition document (or nested beans element)
@@ -1188,7 +1191,7 @@ public class BeanDefinitionParserDelegate {
 	 * Parse a list element. 解析 list 集合
 	 */
 	public List<Object> parseListElement(Element collectionEle, @Nullable BeanDefinition bd) {
-		// 获取<list>元素中的 value-type 属性， 即获取集合元素的数据类型
+		// 获取<list>元素中的 value-type 属性, 即获取集合元素的数据类型
 		String defaultElementType = collectionEle.getAttribute(VALUE_TYPE_ATTRIBUTE);
 		// 获取<list>集合元素中的所有子节点
 		NodeList nl = collectionEle.getChildNodes();

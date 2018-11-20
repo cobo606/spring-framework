@@ -94,11 +94,11 @@ import org.springframework.lang.Nullable;
  * <li>a custom destroy-method definition
  * </ol>
  *
- * <p> BeanFactory 里只对 IOC 容器的基本行为作了定义， 根本不关心你的 Bean 是如何定义怎样加载的。
- * 正如我们只关心工厂里得到什么的产品对象， 至于工厂是怎么生产这些对象的， 这个基本的接口不关心。
- * <p> 而要知道工厂是如何产生对象的， 我们需要看具体的 IOC 容器实现， Spring 提供了许多 IOC 容器
- * 的实现。 比如 XmlBeanFactory， ClasspathXmlApplicationContext 等。 其中 XmlBeanFactory 就
- * 是针对最基本的 IOC 容器的实现， 这个 IOC 容器可以读取 XML 文件定义的 BeanDefinition 中对 bean 的描述）
+ * <p> BeanFactory 里只对 IOC 容器的基本行为作了定义, 根本不关心你的 Bean 是如何定义怎样加载的.
+ * 正如我们只关心工厂里得到什么的产品对象, 至于工厂是怎么生产这些对象的, 这个基本的接口不关心.
+ * <p> 而要知道工厂是如何产生对象的, 我们需要看具体的 IOC 容器实现, Spring 提供了许多 IOC 容器
+ * 的实现.  比如 XmlBeanFactory, ClasspathXmlApplicationContext 等.  其中 XmlBeanFactory 就
+ * 是针对最基本的 IOC 容器的实现, 这个 IOC 容器可以读取 XML 文件定义的 BeanDefinition 中对 bean 的描述）
  *
  * @author Rod Johnson
  * @author Juergen Hoeller

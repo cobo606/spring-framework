@@ -29,6 +29,12 @@ import org.springframework.lang.Nullable;
  * <p>This is pulled out into a strategy as various approaches are possible,
  * including using CGLIB to create subclasses on the fly to support Method Injection.
  *
+ * <ul>
+ *     实例化 bean策略.
+ * <li> {@link SimpleInstantiationStrategy} 使用默认的无参构造方法创建 Bean 实例化对象
+ * <li> {@link CglibSubclassingInstantiationStrategy} 使用 CGLIB 来进行初始化.
+ * </ul>
+ *
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @since 1.1

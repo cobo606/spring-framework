@@ -105,7 +105,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	 * <p>Can be overridden in subclasses, e.g. for turning off XML validation
 	 * or using a different XmlBeanDefinitionParser implementation.
 	 *
-	 * <p> 当 Bean 读取器读取 Bean 定义的 Xml 资源文件时， 启用 Xml 的校验机制
+	 * <p> 当 Bean 读取器读取 Bean 定义的 Xml 资源文件时, 启用 Xml 的校验机制
 	 *
 	 * @param reader the bean definition reader used by this context
 	 * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader#setDocumentReaderClass

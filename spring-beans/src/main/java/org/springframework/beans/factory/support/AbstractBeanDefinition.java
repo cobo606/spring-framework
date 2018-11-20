@@ -424,6 +424,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * Determine the class of the wrapped bean, resolving it from a
 	 * specified class name if necessary. Will also reload a specified
 	 * Class from its name when called with the bean class already resolved.
+	 *
+	 * <p> 解析 加载 Bean 的 class.
+	 *
 	 * @param classLoader the ClassLoader to use for resolving a (potential) class name
 	 * @return the resolved bean class
 	 * @throws ClassNotFoundException if the class name could be resolved
@@ -1067,6 +1070,10 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	/**
 	 * Validate and prepare the method overrides defined for this bean.
 	 * Checks for existence of a method with the specified name.
+	 *
+	 * <p> 当用户配置了 lookup-method 和 replace-method 时, Spring 需要对目标 bean 进行增强.
+	 *  在增强之前, 需要做一些准备工作.
+	 *
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 */
 	public void prepareMethodOverrides() throws BeanDefinitionValidationException {
@@ -1074,6 +1081,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 		if (hasMethodOverrides()) {
 			Set<MethodOverride> overrides = getMethodOverrides().getOverrides();
 			synchronized (overrides) {
+				// 循环处理每个 MethodOverride 对象
 				for (MethodOverride mo : overrides) {
 					prepareMethodOverride(mo);
 				}
@@ -1085,6 +1093,12 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * Validate and prepare the given method override.
 	 * Checks for existence of a method with the specified name,
 	 * marking it as not overloaded if none found.
+	 *
+	 * <p> 这个方法主要用于获取指定方法的方法数量 count, 并根据 count 的值进行相应的处理. count = 0 时,
+	 *  表明方法不存在, 此时抛出异常. count = 1 时, 设置 MethodOverride 对象的overloaded成员变量为 false.
+	 *  这样做的目的在于, 提前标注名称mo.getMethodName()的方法不存在重载, 在使用 CGLIB 增强阶段就不需要进行校验,
+	 *  直接找到某个方法进行增强即可.
+	 *
 	 * @param mo the MethodOverride object to validate
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 */

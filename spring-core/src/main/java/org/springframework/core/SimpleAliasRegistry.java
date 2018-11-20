@@ -208,6 +208,17 @@ public class SimpleAliasRegistry implements AliasRegistry {
 
 	/**
 	 * Determine the raw name, resolving aliases to canonical names.
+	 *
+	 * <p> 该方法用于转换别名, 会使用while 循环处理多重别名的问题. 即别名指向别名. 比如下面的配置：
+	 * <pre>{@code
+	 *   <bean id="hello" class="service.Hello"/>
+	 *   <alias name="hello" alias="aliasA"/>
+	 *   <alias name="aliasA" alias="aliasB"/>
+	 * }</pre>
+	 * 上面的别名指向关系为 aliasB -> aliasA -> hello, 对于上面的别名配置, aliasMap 中数据
+	 * 视图为：aliasMap = [<aliasB, aliasA>, <aliasA, hello>]. 通过下面的循环解析别名
+	 * aliasB 最终指向的 beanName
+	 *
 	 * @param name the user-specified name
 	 * @return the transformed name
 	 */

@@ -44,7 +44,7 @@ import org.springframework.lang.Nullable;
  * @see #getURI()
  * @see #getFile()
  * @see WritableResource 可写入的资源文件, 比如系统中的文件. {@link FileSystemResource}, {@link PathResource}
- * @see ContextResource {@link ServletContextResource} 为访问Web容器上下文中的资源而设计的类，负责以相对于Web应用根目录的路径
+ * @see ContextResource {@link ServletContextResource} 为访问Web容器上下文中的资源而设计的类, 负责以相对于Web应用根目录的路径
  * 加载资源, 它支持以流和URL的方式访问, 在WAR解包的情况下, 也可以通过File的方式访问, 该类还可以直接从JAR包中访问资源.
  * @see UrlResource 封装了java.net.URL, 它使用户能够访问任何可以通过URL表示的资源, 如文件系统的资源, HTTP资源, FTP资源等.
  * @see ClassPathResource 类路径下的资源, 资源以相对于类路径的方式表示.

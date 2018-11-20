@@ -193,14 +193,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						parseDefaultElement(ele, delegate);
 					}
 					else {
-						// 没有使用 Spring 默认的命名空间， 则使用用户自定义的 解析规则解析 Document 根节点
+						// 没有使用 Spring 默认的命名空间, 则使用用户自定义的 解析规则解析 Document 根节点
 						delegate.parseCustomElement(ele);
 					}
 				}
 			}
 		}
 		else {
-			// 没有使用 Spring 默认的命名空间， 则使用用户自定义的 解析规则解析 Document 根节点
+			// 没有使用 Spring 默认的命名空间, 则使用用户自定义的 解析规则解析 Document 根节点
 			delegate.parseCustomElement(root);
 		}
 	}

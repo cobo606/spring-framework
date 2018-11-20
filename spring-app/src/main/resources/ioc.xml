@@ -2,10 +2,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd">
+       http://www.springframework.org/schema/beans/spring-beans.xsd" default-lazy-init="true">
 
 
-	<bean id="customerDao" class="com.cobostack.spring.ioc.dao.CustomerDaoImpl"/>
+	<bean id="customerDao" class="com.cobostack.spring.ioc.dao.CustomerDaoImpl" lazy-init="false" init-method="init"/>
 
 	<bean id="customerService" class="com.cobostack.spring.ioc.service.CustomerServiceImpl">
 		<!-- setter 注入 -->

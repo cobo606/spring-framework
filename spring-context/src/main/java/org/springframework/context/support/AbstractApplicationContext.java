@@ -530,37 +530,49 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 			// Tell the subclass to refresh the internal bean factory.
 			// 获得一个新的 BeanFactory(已存在会被销毁重建), 调用子类的 refreshBeanFactory()
+			// 执行完该方法表示完成了 IOC容器的初始化. BeanDefinition 资源定位, 载入和 解析注册.
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			// 为 BeanFactory 容器 设置一些相关配置, 为后续的使用做准备.
 			prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				// 由子容器实现, 指定一些 BeanProcess等.
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
+				// 调用所有注册的 BeanFactoryPostProcessor 的 Bean
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				// 为 BeanFactory 注册 BeanPost 事件处理器.
+				// BeanPostProcessor 是 Bean 后置处理器, 用于监听容器触发的事件
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
+				// 初始化 信息源.
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				// 初始化容器时间传播器.
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
+				// 调用子类的某些特殊 bean初始化.
 				onRefresh();
 
 				// Check for listener beans and register them.
+				// 为时间传播器 注册事件监听器.
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
+				// 初始化所有 单例bean(调用getBean), 不包含配置了 lazy-init 的bean.
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
+				// 初始化容器的生命周期时间处理器, 并发布容器的生命周期事件.
 				finishRefresh();
 			}
 
@@ -571,9 +583,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				}
 
 				// Destroy already created singletons to avoid dangling resources.
+				// 销毁已创建的 bean
 				destroyBeans();
 
 				// Reset 'active' flag.
+				// 取消 refresh操作, 重置 active flag.
 				cancelRefresh(ex);
 
 				// Propagate exception to caller.
@@ -649,11 +663,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
+		// 设置 classLoader 用于加载bean.
 		beanFactory.setBeanClassLoader(getClassLoader());
+		// 设置表达式解析器(解析bean中定义的表达式).
 		beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
+		// 属性编辑注册器(注册属性编辑器)
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.
+		// 使用 ApplicationContextAwareProcessor 替代下面几个 Aware接口, 并取消6个接口的依赖注入.
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
@@ -680,6 +698,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Register default environment beans.
+		// 注册一些 环境信息类的bean, 比如environment, systemProperties等
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, getEnvironment());
 		}
@@ -850,9 +869,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Finish the initialization of this context's bean factory,
 	 * initializing all remaining singleton beans.
+	 *
+	 * <p> 预实例化 非懒加载的单例 Bean
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
+		// 为容器指定一个 转换服务(conversionService), 在对某些 Bean属性进行装换时使用.
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
 				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
 			beanFactory.setConversionService(
@@ -873,12 +895,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Stop using the temporary ClassLoader for type matching.
+		// 为了类型匹配, 停止使用临时的类加载器.
 		beanFactory.setTempClassLoader(null);
 
 		// Allow for caching all bean definition metadata, not expecting further changes.
+		// 缓存容器中所有注册的 BeanDefinition 元数据, 以防被修改.
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.
+		// 预实例化 单例的 bean, 并进行依赖注入.
 		beanFactory.preInstantiateSingletons();
 	}
 
