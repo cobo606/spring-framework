@@ -1177,24 +1177,42 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			Object result = getAutowireCandidateResolver().getLazyResolutionProxyIfNecessary(
 					descriptor, requestingBeanName);
 			if (result == null) {
+				// 解析依赖
 				result = doResolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
 			}
 			return result;
 		}
 	}
 
+	/**
+	 * <ol>
+	 *     doResolveDependency 的执行流程
+	 * <li> 首先将 beanName 和 requiredType 作为参数, 并尝试从 BeanFactory 中获取与此对于的 bean. 若获取成功, 就可以提前结束
+	 *  doResolveDependency 的逻辑.
+	 * <li> 处理 @value 注解
+	 * <li> 解析数组、List、Map 等类型的依赖, 如果解析结果不为空, 则返回结果
+	 * <li> 根据类型查找合适的候选项
+	 * <li> 如果候选项的数量为0, 则抛出异常. 为1, 直接从候选列表中取出即可. 若候选项数量 > 1, 则在多个候选项中确定最优候选项,
+	 *  若无法确定则抛出异常
+	 * <li> 若候选项是 Class 类型, 表明候选项还没实例化, 此时通过 BeanFactory.getBean 方法对其进行实例化.
+	 *  若候选项是非 Class 类型, 则表明已经完成了实例化, 此时直接返回即可.
+	 * </ol>
+	 */
 	@Nullable
 	public Object doResolveDependency(DependencyDescriptor descriptor, @Nullable String beanName,
 			@Nullable Set<String> autowiredBeanNames, @Nullable TypeConverter typeConverter) throws BeansException {
 
 		InjectionPoint previousInjectionPoint = ConstructorResolver.setCurrentInjectionPoint(descriptor);
 		try {
+			// 该方法最终调用了 beanFactory.getBean(String, Class), 从容器中获取依赖
 			Object shortcut = descriptor.resolveShortcut(this);
+			// 如果容器中存在所需依赖, 这里进行断路操作, 提前结束依赖解析逻辑
 			if (shortcut != null) {
 				return shortcut;
 			}
 
 			Class<?> type = descriptor.getDependencyType();
+			// 处理 @value 注解
 			Object value = getAutowireCandidateResolver().getSuggestedValue(descriptor);
 			if (value != null) {
 				if (value instanceof String) {
@@ -1208,14 +1226,39 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 						converter.convertIfNecessary(value, type, descriptor.getMethodParameter()));
 			}
 
+			// 解析数组、list、map 等类型的依赖
 			Object multipleBeans = resolveMultipleBeans(descriptor, beanName, autowiredBeanNames, typeConverter);
 			if (multipleBeans != null) {
 				return multipleBeans;
 			}
 
+			/*
+			 * 按类型查找候选列表, 如果某个类型已经被实例化, 则返回相应的实例.
+			 * 比如下面的配置：
+			 *
+			 *   <bean name="mongoDao" class="autowire.MongoDao" primary="true"/>
+			 *   <bean name="service" class="autowire.Service" autowire="byType"/>
+			 *   <bean name="mysqlDao" class="autowire.MySqlDao"/>
+			 *
+			 * MongoDao 和 MySqlDao 均实现自 Dao 接口, Service 对象（不是接口）中有一个 Dao
+			 * 类型的属性. 现在根据类型自动注入 Dao 的实现类. 这里有两个候选 bean, 一个是
+			 * mongoDao, 另一个是 mysqlDao, 其中 mongoDao 在 service 之前实例化,
+			 * mysqlDao 在 service 之后实例化. 此时 findAutowireCandidates 方法会返回如下的结果：
+			 *
+			 *   matchingBeans = [ <mongoDao, Object@MongoDao>, <mysqlDao, Class@MySqlDao> ]
+			 *
+			 * 注意 mysqlDao 还未实例化, 所以返回的是 MySqlDao.class.
+			 *
+			 * findAutowireCandidates 这个方法逻辑比较复杂, 主要工作流程如下：
+			 *   1. 从 BeanFactory 中获取某种类型 bean 的名称, 比如上面的配置中
+			 *      mongoDao 和 mysqlDao 均实现了 Dao 接口, 所以他们是同一种类型的 bean.
+			 *   2. 遍历上一步得到的名称列表, 并判断 bean 名称对应的 bean 是否是合适的候选项,
+			 *      若合适则添加到候选列表中, 并在最后返回候选列表
+			 */
 			Map<String, Object> matchingBeans = findAutowireCandidates(beanName, type, descriptor);
 			if (matchingBeans.isEmpty()) {
 				if (isRequired(descriptor)) {
+					// 抛出 NoSuchBeanDefinitionException 异常
 					raiseNoMatchingBeanFound(type, descriptor.getResolvableType(), descriptor);
 				}
 				return null;
@@ -1225,6 +1268,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			Object instanceCandidate;
 
 			if (matchingBeans.size() > 1) {
+				/*
+				 * matchingBeans.size() > 1, 则表明存在多个可注入的候选项, 这里判断使用哪一个
+				 * 候选项. 比如下面的配置：
+				 *
+				 *   <bean name="mongoDao" class="autowire.MongoDao" primary="true"/>
+				 *   <bean name="mysqlDao" class="autowire.MySqlDao"/>
+				 *
+				 * mongoDao 的配置中存在 primary 属性, 所以 mongoDao 会被选为最终的候选项. 如
+				 * 果两个 bean 配置都没有 primary 属性, 则需要根据优先级选择候选项.
+				 */
 				autowiredBeanName = determineAutowireCandidate(matchingBeans, descriptor);
 				if (autowiredBeanName == null) {
 					if (isRequired(descriptor) || !indicatesMultipleBeans(type)) {
@@ -1237,10 +1290,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 						return null;
 					}
 				}
+				// 根据解析出的 autowiredBeanName, 获取相应的候选项
 				instanceCandidate = matchingBeans.get(autowiredBeanName);
 			}
 			else {
 				// We have exactly one match.
+				// 只有一个候选项, 直接取出来即可
 				Map.Entry<String, Object> entry = matchingBeans.entrySet().iterator().next();
 				autowiredBeanName = entry.getKey();
 				instanceCandidate = entry.getValue();
@@ -1249,6 +1304,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			if (autowiredBeanNames != null) {
 				autowiredBeanNames.add(autowiredBeanName);
 			}
+			// 返回候选项实例, 如果实例是 Class 类型, 则调用 beanFactory.getBean(String, Class) 获取相应的 bean. 否则直接返回即可
 			if (instanceCandidate instanceof Class) {
 				instanceCandidate = descriptor.resolveCandidate(autowiredBeanName, type, this);
 			}

@@ -260,7 +260,7 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 		return pd;
 	}
 
-
+	/** bean 属性处理 */
 	private class BeanPropertyHandler extends PropertyHandler {
 
 		private final PropertyDescriptor pd;
@@ -311,6 +311,7 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 
 		@Override
 		public void setValue(final @Nullable Object value) throws Exception {
+			// 获取 writeMethod, 也就是 setter 方法
 			final Method writeMethod = (this.pd instanceof GenericTypeAwarePropertyDescriptor ?
 					((GenericTypeAwarePropertyDescriptor) this.pd).getWriteMethodForActualAccess() :
 					this.pd.getWriteMethod());
@@ -329,6 +330,7 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 			}
 			else {
 				ReflectionUtils.makeAccessible(writeMethod);
+				// 调用 setter 方法, getWrappedInstance() 返回的是 bean 对象
 				writeMethod.invoke(getWrappedInstance(), value);
 			}
 		}
