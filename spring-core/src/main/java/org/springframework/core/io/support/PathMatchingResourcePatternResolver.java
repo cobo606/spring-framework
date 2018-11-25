@@ -168,6 +168,8 @@ import org.springframework.util.StringUtils;
  * Ant-style pattern in such a case, which will search <i>all</i> class path
  * locations that contain the root package.
  *
+ * <p> 模式匹配资源解析.
+ *
  * @author Juergen Hoeller
  * @author Colin Sampaleanu
  * @author Marius Bogoevici
@@ -713,6 +715,9 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	/**
 	 * Find all resources in the file system that match the given location pattern
 	 * via the Ant-style PathMatcher.
+	 *
+	 * <p> 从文件系统中根据模式查找资源.
+	 *
 	 * @param rootDir the root directory in the file system
 	 * @param subPattern the sub pattern to match (below the root directory)
 	 * @return a mutable Set of matching Resource instances

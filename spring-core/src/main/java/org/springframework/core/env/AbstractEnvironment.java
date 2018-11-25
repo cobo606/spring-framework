@@ -107,8 +107,10 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 
 	private final Set<String> defaultProfiles = new LinkedHashSet<>(getReservedDefaultProfiles());
 
+	/** 属性源: 存储了多个属性集合, 例如 系统变量, 环境变量集合. */
 	private final MutablePropertySources propertySources = new MutablePropertySources();
 
+	/** 属性解析器: 根据属性源解析对应的属性或占位符的值. */
 	private final ConfigurablePropertyResolver propertyResolver =
 			new PropertySourcesPropertyResolver(this.propertySources);
 
@@ -386,6 +388,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Map<String, Object> getSystemProperties() {
 		try {
+			// 获取系统属性
 			return (Map) System.getProperties();
 		}
 		catch (AccessControlException ex) {
@@ -415,6 +418,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 			return Collections.emptyMap();
 		}
 		try {
+			// 获取环境变量
 			return (Map) System.getenv();
 		}
 		catch (AccessControlException ex) {
@@ -565,11 +569,13 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 		return this.propertyResolver.getRequiredProperty(key, targetType);
 	}
 
+	// 非严格模式替换占位符, 获取不到展示原始值.
 	@Override
 	public String resolvePlaceholders(String text) {
 		return this.propertyResolver.resolvePlaceholders(text);
 	}
 
+	// 严格模式替换占位符, 获取不到值抛出异常.
 	@Override
 	public String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
 		return this.propertyResolver.resolveRequiredPlaceholders(text);

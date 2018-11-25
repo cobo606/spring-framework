@@ -403,6 +403,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		try {
 			// 将XMl文件转换为 DOM对象, 解析过程由 doLoadDocument 实现.
 			Document doc = doLoadDocument(inputSource, resource);
+			// 注册 BeanDefinition
 			int count = registerBeanDefinitions(doc, resource);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loaded " + count + " bean definitions from " + resource);

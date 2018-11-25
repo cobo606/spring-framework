@@ -17,6 +17,8 @@
 package org.springframework.aop;
 
 import org.aopalliance.aop.Advice;
+import org.springframework.aop.aspectj.AspectJPointcutAdvisor;
+import org.springframework.aop.framework.AdvisedSupport;
 
 /**
  * Base interface holding AOP <b>advice</b> (action to take at a joinpoint)
@@ -29,6 +31,13 @@ import org.aopalliance.aop.Advice;
  * The Advisor interface allows support for different types of advice,
  * such as <b>before</b> and <b>after</b> advice, which need not be
  * implemented using interception.
+ *
+ * <p> 通知器 类似切面的抽象, 是通知和切点的组合: 切面 Aspect 整合了切点和通知两个模块，切点解决了
+ *  where 问题，通知解决了 when 和 how 问题。切面把两者整合起来，就可以解决 对什么方法（where）
+ *  在何时（when - 前置还是后置，或者环绕）执行什么样的横切逻辑（how）的三连发问题。
+ * <p> {@link AspectJPointcutAdvisor} 实现类, 可以返回 通知和切点. Spring 中的通知期 和切面概念的差异在于:
+ *  一个切面可以配置 切点 和 通知的多对多关系(切点可以对应多个通知, 通知也可以对应多个切点)
+ *  而通知器始终是 切点和 通知一对一的关系. 会将多对多地关系存储为 通知器集合. {@link AdvisedSupport#advisors}
  *
  * @author Rod Johnson
  * @author Juergen Hoeller

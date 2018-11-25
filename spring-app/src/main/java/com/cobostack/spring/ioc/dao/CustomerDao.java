@@ -8,4 +8,8 @@ package com.cobostack.spring.ioc.dao;
 public interface CustomerDao {
 
 	void save();
+
+	void select();
+
+	int delete(int id);
 }

@@ -8,4 +8,8 @@ package com.cobostack.spring.ioc.service;
 public interface CustomerService {
 
 	void save();
+
+	void select();
+
+	int delete(int id);
 }

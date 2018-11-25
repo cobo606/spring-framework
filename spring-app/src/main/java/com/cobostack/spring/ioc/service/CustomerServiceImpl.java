@@ -14,6 +14,18 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public void save() {
 		customerDao.save();
+		// 异常通知测试
+		// int i = 1 / 0;
+	}
+
+	@Override
+	public void select() {
+		customerDao.select();
+	}
+
+	@Override
+	public int delete(int id) {
+		return customerDao.delete(id);
 	}
 
 	public void setCustomerDao(CustomerDao customerDao) {

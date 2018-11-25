@@ -28,6 +28,17 @@ public class CustomerDaoImpl implements CustomerDao, InitializingBean, Disposabl
 		LOGGER.debug("[{}] invoke save", this);
 	}
 
+	@Override
+	public void select() {
+		LOGGER.debug("[{}] invoke select", this);
+	}
+
+	@Override
+	public int delete(int id) {
+		LOGGER.debug("[{}] invoke delete", this);
+		return id;
+	}
+
 	// 销毁方法
 	@Override
 	public void destroy() throws Exception {

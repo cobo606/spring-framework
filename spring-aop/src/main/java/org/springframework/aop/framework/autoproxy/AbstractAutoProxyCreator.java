@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.TargetSource;
+import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.framework.ProxyProcessorSupport;
@@ -79,6 +80,9 @@ import org.springframework.util.StringUtils;
  * {@link org.springframework.aop.TargetSource}. If there are no TargetSourceCreators set,
  * or if none matches, a {@link org.springframework.aop.target.SingletonTargetSource}
  * will be used by default to wrap the target bean instance.
+ *
+ * <p> 为 bean 创建代理, AOP 织入.
+ * @see AspectJAwareAdvisorAutoProxyCreator
  *
  * @author Juergen Hoeller
  * @author Rod Johnson
@@ -291,6 +295,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	/**
 	 * Create a proxy with the configured interceptors if the bean is
 	 * identified as one to proxy by the subclass.
+	 *
+	 * <p> 这里返回的 bean 可能是代理后的bean.
+	 *
 	 * @see #getAdvicesAndAdvisorsForBean
 	 */
 	@Override
@@ -298,6 +305,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (bean != null) {
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
 			if (!this.earlyProxyReferences.contains(cacheKey)) {
+				// 如果需要, 为 bean 生成代理对象
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
 		}
@@ -328,6 +336,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 	/**
 	 * Wrap the given bean if necessary, i.e. if it is eligible for being proxied.
+	 *
+	 * <p> 如果需要, 为 bean 生成代理对象
+	 *
 	 * @param bean the raw bean instance
 	 * @param beanName the name of the bean
 	 * @param cacheKey the cache key for metadata access
@@ -340,18 +351,30 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
 			return bean;
 		}
+
+		/*
+		 * 如果是基础设施类（Pointcut、Advice、Advisor 等接口的实现类），或是应该跳过的类，
+		 * 则不应该生成代理，此时直接返回 bean
+		 */
 		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
+			// 将 <beanName, false> 键值对放入缓存中, 并返回.
 			this.advisedBeans.put(cacheKey, Boolean.FALSE);
 			return bean;
 		}
 
 		// Create proxy if we have advice.
+		// 为目标 bean 查找合适的通知器
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
+
+		// 若 specificInterceptors != null, 则为 bean 生成代理对象，否则直接返回 bean
 		if (specificInterceptors != DO_NOT_PROXY) {
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
+			// 创建代理
 			Object proxy = createProxy(
 					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
 			this.proxyTypes.put(cacheKey, proxy.getClass());
+
+			// 返回代理对象, 此时IOC容器中 beanName 对应的 bean 是代理对象, 而非原始的 bean.
 			return proxy;
 		}
 
@@ -432,10 +455,13 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 	/**
 	 * Create an AOP proxy for the given bean.
+	 *
+	 * <p> 创建代理对象.
+	 *
 	 * @param beanClass the class of the bean
 	 * @param beanName the name of the bean
 	 * @param specificInterceptors the set of interceptors that is
-	 * specific to this bean (may be empty, but not null)
+	 * specific to this bean (may be empty, but not null) 拦截器或通知器集合, 将被织入.
 	 * @param targetSource the TargetSource for the proxy,
 	 * already pre-configured to access the bean
 	 * @return the AOP proxy for the bean

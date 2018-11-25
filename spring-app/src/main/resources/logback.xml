@@ -24,7 +24,7 @@
         </encoder>
     </appender>
 
-    <root level="all">
+    <root level="debug">
         <appender-ref ref="console" />
         <appender-ref ref="file" />
     </root>
@@ -32,5 +32,6 @@
     <!-- 设置当个类输出日志的级别, 优先级大于全局 -->
     <logger name="com.example.logback" level="warn" />
     <logger name="org.springframework.beans.factory.xml.PluggableSchemaResolver" level="info" />
+    <logger name="org.springframework" level="info" />
 
 </configuration>

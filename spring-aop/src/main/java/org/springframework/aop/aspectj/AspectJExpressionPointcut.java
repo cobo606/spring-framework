@@ -73,6 +73,11 @@ import org.springframework.util.StringUtils;
  * <p>Naturally, as this is to be processed by Spring AOP's proxy-based model,
  * only method execution pointcuts are supported.
  *
+ * <p> 该类 实现了 Pointcut、ClassFilter 和 MethodMatcher 接口，因此该类具备了通过 AspectJ 表达式对连接点进行选择的能力。
+ * <pre>
+ *   execution(* *.find*(..)) 选择名称以 find起始的方法.
+ * </pre>
+ *
  * @author Rob Harrop
  * @author Adrian Colyer
  * @author Rod Johnson

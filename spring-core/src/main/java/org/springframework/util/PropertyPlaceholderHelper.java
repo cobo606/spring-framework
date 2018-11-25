@@ -33,6 +33,9 @@ import org.springframework.lang.Nullable;
  * user-supplied values. <p> Values for substitution can be supplied using a {@link Properties} instance or
  * using a {@link PlaceholderResolver}.
  *
+ * <p> 用于替换 字符串占位符(${user.dir}) 的基础工具类, 可通过传递 占位符前缀和后缀,
+ *  并且实现 占位符的解析方法(或者提供 properties 属性集对象) 来获得解析后的字符串.
+ *
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @since 3.0
@@ -49,16 +52,19 @@ public class PropertyPlaceholderHelper {
 		wellKnownSimplePrefixes.put(")", "(");
 	}
 
-
+	/** 占位符前缀 */
 	private final String placeholderPrefix;
 
+	/** 占位符后缀 */
 	private final String placeholderSuffix;
 
 	private final String simplePrefix;
 
+	/** 占位符内的值分隔符, ${user:default} 如果未解析出user, 则返回default */
 	@Nullable
 	private final String valueSeparator;
 
+	/** 忽略未解析的字符串. true -> 忽略(非严格模式 显示原始字符), false -> 不忽略(严格模式 抛出异常) */
 	private final boolean ignoreUnresolvablePlaceholders;
 
 
@@ -209,6 +215,8 @@ public class PropertyPlaceholderHelper {
 
 	/**
 	 * Strategy interface used to resolve replacement values for placeholders contained in Strings.
+	 *
+	 * <p> 占位符解析策略接口, 传递占位符字符串, 返回对应的属性值. 
 	 */
 	@FunctionalInterface
 	public interface PlaceholderResolver {

@@ -36,6 +36,8 @@ import org.springframework.util.StringUtils;
  * interceptor names to apply to all identified beans, via the
  * "interceptorNames" property.
  *
+ * <p> 根据 指定的 beanNames 和 interceptorNames 自动创建代理对象.
+ *
  * @author Juergen Hoeller
  * @since 10.10.2003
  * @see #setBeanNames

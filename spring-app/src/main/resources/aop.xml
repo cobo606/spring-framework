@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- log 通知(pojo) -->
+	<bean id="logAdvice" class="com.cobostack.spring.aop.advice.LogAdvice" />
+
+	<aop:config>
+		<aop:aspect ref="logAdvice">
+			<aop:pointcut id="allServicePt" expression="execution(* com.cobostack..service.*Impl.*(..))"/>
+
+			<aop:before method="beforePrint" pointcut-ref="allServicePt"/>
+			<aop:after-returning method="afterReturningPrint"
+								 pointcut="execution(* com.cobostack..service.*Impl.delete(..))" returning="result"/>
+			<aop:after-throwing method="afterThrowingPrint" pointcut-ref="allServicePt" throwing="ex"/>
+			<aop:after method="afterPrint" pointcut-ref="allServicePt"/>
+
+			<!-- 环绕通知
+			<aop:around method="aroundPrint" pointcut-ref="allServicePt"/>-->
+		</aop:aspect>
+	</aop:config>
+
+</beans>

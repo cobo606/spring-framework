@@ -16,12 +16,16 @@
 
 package org.springframework.aop;
 
+import org.springframework.aop.aspectj.AspectJExpressionPointcut;
+
 /**
  * Core Spring pointcut abstraction.
  *
  * <p>A pointcut is composed of a {@link ClassFilter} and a {@link MethodMatcher}.
  * Both these basic terms and a Pointcut itself can be combined to build up combinations
  * (e.g. through {@link org.springframework.aop.support.ComposablePointcut}).
+ *
+ * <p> 切点用于选择连接点. 根据切点表达式, 选择需要切入方法(连接点). {@link AspectJExpressionPointcut} 实现类.
  *
  * @author Rod Johnson
  * @see ClassFilter
@@ -34,13 +38,13 @@ public interface Pointcut {
 
 	/**
 	 * Return the ClassFilter for this pointcut.
-	 * @return the ClassFilter (never {@code null})
+	 * @return the ClassFilter (never {@code null}) 类过滤器
 	 */
 	ClassFilter getClassFilter();
 
 	/**
 	 * Return the MethodMatcher for this pointcut.
-	 * @return the MethodMatcher (never {@code null})
+	 * @return the MethodMatcher (never {@code null}) 方法匹配器
 	 */
 	MethodMatcher getMethodMatcher();
 

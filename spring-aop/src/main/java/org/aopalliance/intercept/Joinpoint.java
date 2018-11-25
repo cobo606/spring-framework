@@ -16,6 +16,8 @@
 
 package org.aopalliance.intercept;
 
+import org.springframework.aop.framework.ReflectiveMethodInvocation;
+
 import java.lang.reflect.AccessibleObject;
 
 /**
@@ -34,6 +36,9 @@ import java.lang.reflect.AccessibleObject;
  * joinpoint. It is passed to the interceptors that are installed on
  * the static joinpoint.
  *
+ * <p> 连接点是指程序执行过程中的一些点，比如方法调用，异常处理等。在 Spring AOP 中，仅支持方法级别的连接点。
+ * {@link ReflectiveMethodInvocation} 实现类.
+ *
  * @author Rod Johnson
  * @see Interceptor
  */
@@ -43,6 +48,10 @@ public interface Joinpoint {
 	 * Proceed to the next interceptor in the chain.
 	 * <p>The implementation and the semantics of this method depends
 	 * on the actual joinpoint type (see the children interfaces).
+	 *
+	 * <p> 用于执行拦截器链中的下一个拦截器逻辑, 以前置通知拦截器为例。在执行目标方法前，该拦截器首先会执行前置通知逻辑，
+	 * 如果拦截器链中还有其他的拦截器，则继续调用下一个拦截器逻辑。直到拦截器链中没有其他的拦截器后，再去调用目标方法。
+	 *
 	 * @return see the children interfaces' proceed definition
 	 * @throws Throwable if the joinpoint throws an exception
 	 */

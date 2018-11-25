@@ -121,6 +121,9 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	/**
 	 * Resolve the given path, replacing placeholders with corresponding
 	 * environment property values if necessary. Applied to config locations.
+	 *
+	 * <p> 解析带有系统参数占位符的字符串路径. eg. "${user.dir}/ioc.xml" -> "/home/user/ioc.xml"
+	 *
 	 * @param path the original file path
 	 * @return the resolved file path
 	 * @see org.springframework.core.env.Environment#resolveRequiredPlaceholders(String)

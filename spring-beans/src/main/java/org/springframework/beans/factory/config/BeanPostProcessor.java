@@ -33,6 +33,8 @@ import org.springframework.lang.Nullable;
  * while post-processors that wrap beans with proxies will normally
  * implement {@link #postProcessAfterInitialization}.
  *
+ * <p> BeanPostProcessor 是 Spring 框架的一个扩展点, 通过实现 BeanPostProcessor 接口, 我们就可插手 bean 实例化的过程.
+ *
  * @author Juergen Hoeller
  * @since 10.10.2003
  * @see InstantiationAwareBeanPostProcessor

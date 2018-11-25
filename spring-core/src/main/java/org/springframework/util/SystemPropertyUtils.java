@@ -44,10 +44,11 @@ public abstract class SystemPropertyUtils {
 	/** Value separator for system property placeholders: ":". */
 	public static final String VALUE_SEPARATOR = ":";
 
-
+	/** 严格模式 */
 	private static final PropertyPlaceholderHelper strictHelper =
 			new PropertyPlaceholderHelper(PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, false);
 
+	/** 非严格模式 */
 	private static final PropertyPlaceholderHelper nonStrictHelper =
 			new PropertyPlaceholderHelper(PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, true);
 
@@ -86,6 +87,9 @@ public abstract class SystemPropertyUtils {
 	/**
 	 * PlaceholderResolver implementation that resolves against system properties
 	 * and system environment variables.
+	 *
+	 * <p> 实现 占位符解析的策略接口 {@link PropertyPlaceholderHelper.PlaceholderResolver}
+	 *  把占位符字符串 获取对应的系统参数值.
 	 */
 	private static class SystemPropertyPlaceholderResolver implements PropertyPlaceholderHelper.PlaceholderResolver {
 
@@ -99,9 +103,11 @@ public abstract class SystemPropertyUtils {
 		@Nullable
 		public String resolvePlaceholder(String placeholderName) {
 			try {
+				// 先获取系统变量
 				String propVal = System.getProperty(placeholderName);
 				if (propVal == null) {
 					// Fall back to searching the system environment.
+					// 获取环境变量
 					propVal = System.getenv(placeholderName);
 				}
 				return propVal;
