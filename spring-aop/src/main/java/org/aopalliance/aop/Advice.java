@@ -29,14 +29,14 @@ import java.lang.reflect.Method;
  * Tag interface for Advice. Implementations can be any type
  * of advice, such as Interceptors.
  *
- * <p> 通知 Advice 即我们定义的横切逻辑，比如我们可以定义一个用于监控方法性能的通知，也可以定义一个输出日志的通知等。
+ * <p> 通知 Advice 即我们定义的横切逻辑, 比如我们可以定义一个用于监控方法性能的通知, 也可以定义一个输出日志的通知等.
  * <p> 通知逻辑在什么时候被调用呢? 通过切点可以解决通知在哪些方法上需要调用通知, 但是目标方法执行前被调用,
  *  还是目标方法执行后被调用呢? Spring 中定义了以下几种通知类型:
  * <ul>
  * <li> 前置通知（Before advice）- 在目标方便调用前执行通知 {@link AspectJMethodBeforeAdvice#before(Method, Object[], Object)}
  * <li> 后置通知（After advice）- 在目标方法完成后执行通知 {@link AspectJAfterAdvice#invoke(MethodInvocation)}
- * <li> 返回通知（After returning advice）- 在目标方法执行成功后，调用通知 {@link AspectJAfterReturningAdvice#afterReturning(Object, Method, Object[], Object)}
- * <li> 异常通知（After throwing advice）- 在目标方法抛出异常后，执行通知 {@link AspectJAfterThrowingAdvice#invoke(MethodInvocation)}
+ * <li> 返回通知（After returning advice）- 在目标方法执行成功后, 调用通知 {@link AspectJAfterReturningAdvice#afterReturning(Object, Method, Object[], Object)}
+ * <li> 异常通知（After throwing advice）- 在目标方法抛出异常后, 执行通知 {@link AspectJAfterThrowingAdvice#invoke(MethodInvocation)}
  * <li> 环绕通知（Around advice）- 在目标方法调用前后均可执行自定义逻辑 {@link AspectJAroundAdvice#invoke(MethodInvocation)}
  * </ul>
  *

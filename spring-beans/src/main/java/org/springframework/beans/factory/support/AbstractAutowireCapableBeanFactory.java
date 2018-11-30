@@ -2031,8 +2031,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		try {
 			/*
 			 * 调用初始化方法：
-			 * 1. 若 bean 实现了 InitializingBean 接口，则调用 afterPropertiesSet 方法
-			 * 2. 若用户配置了 bean 的 init-method 属性，则调用用户在配置中指定的方法
+			 * 1. 若 bean 实现了 InitializingBean 接口, 则调用 afterPropertiesSet 方法
+			 * 2. 若用户配置了 bean 的 init-method 属性, 则调用用户在配置中指定的方法
 			 */
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		}
