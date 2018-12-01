@@ -55,17 +55,27 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 		// but we need to preserve order in the ultimate list.
 		AdvisorAdapterRegistry registry = GlobalAdvisorAdapterRegistry.getInstance();
 		Advisor[] advisors = config.getAdvisors();
+		// 存储拦截器集合(通知也会转换为拦截器)
 		List<Object> interceptorList = new ArrayList<>(advisors.length);
 		Class<?> actualClass = (targetClass != null ? targetClass : method.getDeclaringClass());
 		Boolean hasIntroductions = null;
 
+		// 遍历通知器列表
 		for (Advisor advisor : advisors) {
 			if (advisor instanceof PointcutAdvisor) {
 				// Add it conditionally.
 				PointcutAdvisor pointcutAdvisor = (PointcutAdvisor) advisor;
+
+				// 这里判断切面逻辑的调用链是否提前进行过过滤, 如果进行过, 则不再进行目标类的匹配,
+				// 调用 ClassFilter 对 bean 类型进行匹配, 无法匹配则说明当前通知器 不适合应用在当前 bean 上.
 				if (config.isPreFiltered() || pointcutAdvisor.getPointcut().getClassFilter().matches(actualClass)) {
+
+					// 通过 MethodMatcher 方法匹配器对目标方法进行匹配.
 					MethodMatcher mm = pointcutAdvisor.getPointcut().getMethodMatcher();
 					boolean match;
+					// 这里进行匹配的时候, 首先会检查是否为IntroductionAwareMethodMatcher类型的
+					// Matcher, 如果是, 则调用其定义的matches()方法进行匹配, 如果不是, 则直接调用
+					// 当前切面的matches()方法进行匹配.
 					if (mm instanceof IntroductionAwareMethodMatcher) {
 						if (hasIntroductions == null) {
 							hasIntroductions = hasMatchingIntroductions(advisors, actualClass);
@@ -75,8 +85,13 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 					else {
 						match = mm.matches(method, actualClass);
 					}
+
+					// 目标方法匹配.
 					if (match) {
+						// 将 advisor 中的 advice 转成相应的拦截器
 						MethodInterceptor[] interceptors = registry.getInterceptors(advisor);
+
+						// 若 isRuntime 返回 true(动态匹配), 则使用 InterceptorAndDynamicMethodMatcher对其进行封装.
 						if (mm.isRuntime()) {
 							// Creating a new object instance in the getInterceptors() method
 							// isn't a problem as we normally cache created chains.
@@ -85,12 +100,14 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 							}
 						}
 						else {
+							// 如果是静态匹配, 则直接将调用链返回.
 							interceptorList.addAll(Arrays.asList(interceptors));
 						}
 					}
 				}
 			}
 			else if (advisor instanceof IntroductionAdvisor) {
+				// IntroductionAdvisor 类型的通知器, 仅需进行类级别的匹配即可.
 				IntroductionAdvisor ia = (IntroductionAdvisor) advisor;
 				if (config.isPreFiltered() || ia.getClassFilter().matches(actualClass)) {
 					Interceptor[] interceptors = registry.getInterceptors(advisor);
@@ -98,6 +115,9 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 				}
 			}
 			else {
+				// 这里是提供的使用自定义的转换器对Advisor进行转换的逻辑, 因为getInterceptors()方法中
+				// 会使用相应的Adapter对目标Advisor进行匹配, 如果能匹配上, 通过其getInterceptor()方法
+				// 将自定义的Advice转换为MethodInterceptor对象
 				Interceptor[] interceptors = registry.getInterceptors(advisor);
 				interceptorList.addAll(Arrays.asList(interceptors));
 			}

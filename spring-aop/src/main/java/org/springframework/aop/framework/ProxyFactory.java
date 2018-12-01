@@ -107,6 +107,7 @@ public class ProxyFactory extends ProxyCreatorSupport {
 	 * @return the proxy object
 	 */
 	public Object getProxy(@Nullable ClassLoader classLoader) {
+		// 先获取 AopProxy 对象, 然后获取具体的代理对象.
 		return createAopProxy().getProxy(classLoader);
 	}
 

@@ -86,6 +86,8 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 	/**
 	 * Interfaces to be implemented by the proxy. Held in List to keep the order
 	 * of registration, to create JDK proxy with specified order of interfaces.
+	 *
+	 * <p> 存储 目标类的所有接口.
 	 */
 	private List<Class<?>> interfaces = new ArrayList<>();
 
@@ -472,16 +474,33 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 	/**
 	 * Determine a list of {@link org.aopalliance.intercept.MethodInterceptor} objects
 	 * for the given method, based on this configuration.
+	 *
+	 * <p> 获取 当前方法 的所有匹配的通知/拦截器, 一个 bean 的所有通知拦截器是确定的. 针对方法过滤出相应的通知拦截器即可.
+	 *
+	 * <ol>
+	 *     获取拦截器的过程
+	 * <li> 从缓存中获取当前方法的拦截器链
+	 * <li> 若缓存未命中, 则调用 getInterceptorsAndDynamicInterceptionAdvice 获取拦截器链.
+	 * <li> 遍历通知器列表
+	 * <li> 对于 PointcutAdvisor 类型的通知器, 这里要调用通知器所持有的切点(Pointcut)对类和方法进行匹配,
+	 *  匹配成功说明应向当前方法织入通知逻辑.
+	 * <li> 调用 getInterceptors 方法对非 MethodInterceptor 类型的通知进行转换.
+	 * <li> 返回拦截器数组, 并在随后存入缓存中.
+	 * </ol>
+	 *
 	 * @param method the proxied method
 	 * @param targetClass the target class
 	 * @return a List of MethodInterceptors (may also include InterceptorAndDynamicMethodMatchers)
 	 */
 	public List<Object> getInterceptorsAndDynamicInterceptionAdvice(Method method, @Nullable Class<?> targetClass) {
 		MethodCacheKey cacheKey = new MethodCacheKey(method);
+		// 先从缓存中获取, 如果存在直接返回.
 		List<Object> cached = this.methodCache.get(cacheKey);
 		if (cached == null) {
+			// 获取当前方法 所有匹配的拦截器
 			cached = this.advisorChainFactory.getInterceptorsAndDynamicInterceptionAdvice(
 					this, method, targetClass);
+			// 存入缓存.
 			this.methodCache.put(cacheKey, cached);
 		}
 		return cached;

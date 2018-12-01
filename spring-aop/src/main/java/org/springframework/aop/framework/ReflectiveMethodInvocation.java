@@ -50,6 +50,8 @@ import org.springframework.lang.Nullable;
  * with existing framework integrations (e.g. Pitchfork). For any other
  * purposes, use the {@link ProxyMethodInvocation} interface instead.
  *
+ * <p> 所有代理的通知及拦截器链执行都会被封装进该类, 通过 {@link ReflectiveMethodInvocation#proceed()} 执行.
+ *
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @author Adrian Colyer
@@ -159,10 +161,13 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	@Nullable
 	public Object proceed() throws Throwable {
 		//	We start with an index of -1 and increment early.
+		// 拦截器链中的最后一个拦截器执行完后, 即可执行目标方法
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
+			// 执行目标方法
 			return invokeJoinpoint();
 		}
 
+		// 拦截器链的位置, 每次调用 proceed() 都后移一个, 指向下一个拦截器.
 		Object interceptorOrInterceptionAdvice =
 				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
@@ -171,18 +176,22 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 			InterceptorAndDynamicMethodMatcher dm =
 					(InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;
 			Class<?> targetClass = (this.targetClass != null ? this.targetClass : this.method.getDeclaringClass());
+			// 这里获得相应的拦截器, 如果拦截器可以匹配的上的话, 那就调用拦截器的invoke方法.
 			if (dm.methodMatcher.matches(this.method, targetClass, this.arguments)) {
+				// 调用拦截器, 并传递 ReflectiveMethodInvocation 对象.
 				return dm.interceptor.invoke(this);
 			}
 			else {
 				// Dynamic matching failed.
 				// Skip this interceptor and invoke the next in the chain.
+				// 没有匹配上就调用下一个拦截器
 				return proceed();
 			}
 		}
 		else {
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.
+			// 直接调用拦截器, 并传递 ReflectiveMethodInvocation 对象.
 			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);
 		}
 	}

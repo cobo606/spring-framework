@@ -81,11 +81,13 @@ public final class AopContext {
 	 */
 	@Nullable
 	static Object setCurrentProxy(@Nullable Object proxy) {
+		// 返回旧的 代理对象.
 		Object old = currentProxy.get();
 		if (proxy != null) {
 			currentProxy.set(proxy);
 		}
 		else {
+			// 为 null 就把旧的代理对象移除掉.
 			currentProxy.remove();
 		}
 		return old;

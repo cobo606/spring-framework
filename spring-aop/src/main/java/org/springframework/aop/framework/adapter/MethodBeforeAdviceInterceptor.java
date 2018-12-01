@@ -43,6 +43,8 @@ public class MethodBeforeAdviceInterceptor implements MethodInterceptor, BeforeA
 	/**
 	 * Create a new MethodBeforeAdviceInterceptor for the given advice.
 	 * @param advice the MethodBeforeAdvice to wrap
+	 *
+	 * <p> 封装 方法前缀通知, 创建方法前置拦截器.
 	 */
 	public MethodBeforeAdviceInterceptor(MethodBeforeAdvice advice) {
 		Assert.notNull(advice, "Advice must not be null");
@@ -52,7 +54,9 @@ public class MethodBeforeAdviceInterceptor implements MethodInterceptor, BeforeA
 
 	@Override
 	public Object invoke(MethodInvocation mi) throws Throwable {
+		// 执行前置通知逻辑
 		this.advice.before(mi.getMethod(), mi.getArguments(), mi.getThis());
+		// 通过 MethodInvocation 调用下一个拦截器, 若所有拦截器均执行完, 则调用目标方法
 		return mi.proceed();
 	}
 

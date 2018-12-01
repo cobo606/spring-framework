@@ -10,7 +10,8 @@
 	<!-- log 通知(pojo) -->
 	<bean id="logAdvice" class="com.cobostack.spring.aop.advice.LogAdvice" />
 
-	<aop:config>
+	<!-- proxy-target-class="true" 强制使用CGLIB代理 -->
+	<aop:config proxy-target-class="false">
 		<aop:aspect ref="logAdvice">
 			<aop:pointcut id="allServicePt" expression="execution(* com.cobostack..service.*Impl.*(..))"/>
 

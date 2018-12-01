@@ -98,6 +98,9 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 	 * if appropriate.
 	 * <p>Calls {@link #isConfigurationCallbackInterface} and {@link #isInternalLanguageInterface}
 	 * to filter for reasonable proxy interfaces, falling back to a target-class proxy otherwise.
+	 *
+	 * <p> 目标类是否包含了接口, 存在则设置所有的接口到 ProxyConfig, 否则设置 ProxyTargetClass 属性为 true.
+	 *
 	 * @param beanClass the class of the bean
 	 * @param proxyFactory the ProxyFactory for the bean
 	 */
@@ -113,6 +116,7 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 		}
 		if (hasReasonableProxyInterface) {
 			// Must allow for introductions; can't just set interfaces to the target's interfaces only.
+			// 添加所有接口.
 			for (Class<?> ifc : targetInterfaces) {
 				proxyFactory.addInterface(ifc);
 			}

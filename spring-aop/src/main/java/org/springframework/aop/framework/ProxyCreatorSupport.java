@@ -32,6 +32,7 @@ import org.springframework.util.Assert;
 @SuppressWarnings("serial")
 public class ProxyCreatorSupport extends AdvisedSupport {
 
+	// 使用 DefaultAopProxyFactory 创建 AopProxy
 	private AopProxyFactory aopProxyFactory;
 
 	private final List<AdvisedSupportListener> listeners = new LinkedList<>();
@@ -97,6 +98,10 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 	/**
 	 * Subclasses should call this to get a new AOP proxy. They should <b>not</b>
 	 * create an AOP proxy with {@code this} as an argument.
+	 *
+	 * <p> 实际调用 {@link DefaultAopProxyFactory#createAopProxy(AdvisedSupport)} 来创建 AopProxy.
+	 *  并且由于该类实现了 {@link AdvisedSupport}, {@link ProxyConfig} 即存储了创建代理的 所有配置信息.
+	 *  所以直接把this传递给了方法 createAopProxy(this).
 	 */
 	protected final synchronized AopProxy createAopProxy() {
 		if (!this.active) {

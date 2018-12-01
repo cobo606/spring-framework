@@ -93,6 +93,14 @@ public abstract class AopProxyUtils {
 	 * <p>This will always add the {@link Advised} interface unless the AdvisedSupport's
 	 * {@link AdvisedSupport#setOpaque "opaque"} flag is on. Always adds the
 	 * {@link org.springframework.aop.SpringProxy} marker interface.
+	 *
+	 * <ol>
+	 *     主要目的是为要生成的代理类增加SpringProxy, Advised, DecoratingProxy三个需要实现的接口. 这里三个接口的作用如下:
+	 * <li> SpringProxy: 是一个空接口, 用于标记当前生成的代理类是Spring生成的代理类;
+	 * <li> Advised：Spring生成代理类所使用的属性都保存在该接口中, 包括Advisor, Advice和其他相关属性;
+	 * <li> DecoratingProxy：该接口用于获取当前代理对象所代理的目标对象的Class类型.
+	 * </ol>
+	 *
 	 * @param advised the proxy config
 	 * @return the complete set of interfaces to proxy
 	 * @see SpringProxy

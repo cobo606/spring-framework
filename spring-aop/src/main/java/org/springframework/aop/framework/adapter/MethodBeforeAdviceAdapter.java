@@ -42,6 +42,8 @@ class MethodBeforeAdviceAdapter implements AdvisorAdapter, Serializable {
 	@Override
 	public MethodInterceptor getInterceptor(Advisor advisor) {
 		MethodBeforeAdvice advice = (MethodBeforeAdvice) advisor.getAdvice();
+		// 由于 MethodBeforeAdvice 通知器未实现 MethodInterceptor 接口, 这里来适配, 将通知器转换为拦截器返回.
+		// 创建 MethodBeforeAdviceInterceptor 拦截器
 		return new MethodBeforeAdviceInterceptor(advice);
 	}
 
